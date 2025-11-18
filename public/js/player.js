@@ -256,10 +256,10 @@ function getMovementInput() {
   if (keys.d) moveX += 1;
 
   // Arrow keys
-  if (keys.arrowup) moveY -= 1;
-  if (keys.arrowdown) moveY += 1;
-  if (keys.arrowleft) moveX -= 1;
-  if (keys.arrowright) moveX += 1;
+  if (keys.ArrowUp) moveY -= 1;
+  if (keys.ArrowDown) moveY += 1;
+  if (keys.ArrowLeft) moveX -= 1;
+  if (keys.ArrowRight) moveX += 1;
 
   return { moveX, moveY };
 }

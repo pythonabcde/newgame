@@ -7,8 +7,8 @@ module.exports = {
   ROOM_CODE_LENGTH: 6,
 
   // Map settings
-  MAP_WIDTH: 100,
-  MAP_HEIGHT: 60,
+  MAP_WIDTH: 150,
+  MAP_HEIGHT: 90,
 
   // Player settings
   PLAYER_RADIUS: 1.5,
@@ -20,9 +20,9 @@ module.exports = {
   DASH_COOLDOWN_SECONDS: 2,
 
   // Zone settings
-  ZONE_RADIUS: 8,
+  ZONE_RADIUS: 12,
   ZONE_LOOP_PERIOD_SECONDS: 60, // Time to complete one loop
-  ZONE_PATH_MARGIN: 8, // Distance from map edges
+  ZONE_PATH_MARGIN: 12, // Distance from map edges
 
   // Server settings
   SERVER_TICK_RATE: 30, // updates per second

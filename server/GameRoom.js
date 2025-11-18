@@ -9,7 +9,8 @@ const {
   SERVER_TICK_RATE,
   COLORS,
   TEAMS,
-  ZONE_RADIUS
+  ZONE_RADIUS,
+  PLAYER_RADIUS
 } = require('./constants');
 
 const {
@@ -345,8 +346,9 @@ class GameRoom {
     const team2Stats = { total: 0, correct: 0 };
 
     for (const player of connectedPlayers) {
-      const inZone1 = distance(player.x, player.y, this.zones[0].x, this.zones[0].y) <= ZONE_RADIUS;
-      const inZone2 = distance(player.x, player.y, this.zones[1].x, this.zones[1].y) <= ZONE_RADIUS;
+      // Check if player is touching or inside zone (considering player radius)
+      const inZone1 = distance(player.x, player.y, this.zones[0].x, this.zones[0].y) <= (ZONE_RADIUS + PLAYER_RADIUS);
+      const inZone2 = distance(player.x, player.y, this.zones[1].x, this.zones[1].y) <= (ZONE_RADIUS + PLAYER_RADIUS);
 
       let targetZone = null;
       if (inZone1 && !inZone2) targetZone = this.zones[0];

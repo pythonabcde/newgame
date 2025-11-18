@@ -3,8 +3,8 @@ class GameRenderer {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.mapWidth = 100;
-    this.mapHeight = 60;
+    this.mapWidth = 150;
+    this.mapHeight = 90;
     this.scale = 1;
     this.offsetX = 0;
     this.offsetY = 0;
@@ -75,7 +75,7 @@ class GameRenderer {
     this.ctx.scale(this.scale, this.scale);
 
     for (const zone of zones) {
-      const radius = 8; // ZONE_RADIUS
+      const radius = 12; // ZONE_RADIUS
 
       // Determine fill and stroke colors based on ownership
       let fillColor, strokeColor;

@@ -86,12 +86,12 @@ function wouldCollide(tentativePos, currentPlayer, allPlayers) {
  */
 function generateSpawnPositions(playerCount, zones) {
   const positions = [];
-  const SPAWN_MIN_X = 25;
-  const SPAWN_MAX_X = 75;
-  const SPAWN_MIN_Y = 15;
-  const SPAWN_MAX_Y = 45;
+  const SPAWN_MIN_X = 38;
+  const SPAWN_MAX_X = 112;
+  const SPAWN_MIN_Y = 23;
+  const SPAWN_MAX_Y = 68;
   const MIN_SPACING = PLAYER_RADIUS * 3;
-  const ZONE_SAFE_DISTANCE = 10;
+  const ZONE_SAFE_DISTANCE = 15;
 
   let attempts = 0;
   const maxAttempts = playerCount * 100;

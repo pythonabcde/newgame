@@ -1,4 +1,4 @@
-const { MAP_WIDTH, MAP_HEIGHT, ZONE_RADIUS, ZONE_PATH_MARGIN, ZONE_LOOP_PERIOD_SECONDS } = require('./constants');
+const { MAP_WIDTH, MAP_HEIGHT, ZONE_RADIUS, ZONE_PATH_MARGIN, ZONE_LOOP_PERIOD_SECONDS, PLAYER_RADIUS } = require('./constants');
 const { distance } = require('./physics');
 
 /**
@@ -75,10 +75,11 @@ function updateZonePositions(zones, gameTime) {
  */
 function updateZoneOwnership(zones, players, currentTime) {
   for (const zone of zones) {
-    // Find all players inside this zone
+    // Find all players inside this zone (touching or inside)
     const playersInZone = players.filter(p => {
       if (!p.connected || !p.teamId) return false;
-      return distance(p.x, p.y, zone.x, zone.y) <= ZONE_RADIUS;
+      // Player is in zone if any part of the circle touches the zone
+      return distance(p.x, p.y, zone.x, zone.y) <= (ZONE_RADIUS + PLAYER_RADIUS);
     });
 
     if (playersInZone.length === 0) {
