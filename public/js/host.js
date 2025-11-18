@@ -31,7 +31,7 @@ function connectWebSocket() {
 
   ws.onerror = (error) => {
     console.error('WebSocket error:', error);
-    alert('连接错误，请刷新页面重试');
+    alert('Connection error. Please refresh the page and try again.');
   };
 
   ws.onclose = () => {
@@ -203,7 +203,7 @@ function updateGameState(data) {
   }
 
   if (data.players) {
-    document.getElementById('playerCount').textContent = `玩家: ${data.players.length}`;
+    document.getElementById('playerCount').textContent = `Players: ${data.players.length}`;
   }
 }
 
@@ -237,7 +237,7 @@ function returnToLobby() {
 
 // End session
 function endSession() {
-  if (confirm('确定要结束会话吗？所有玩家将被断开连接。')) {
+  if (confirm('Are you sure you want to end the session? All players will be disconnected.')) {
     ws.send(JSON.stringify({
       type: 'HOST_END_SESSION'
     }));

@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>主持人 - Connection Sorting</title>
+  <title>Host - Connection Sorting</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <!-- Host Landing -->
   <div id="hostLanding" class="home">
     <h1>Connection Sorting</h1>
-    <p>主持人控制面板</p>
+    <p>Host Control Panel</p>
 
     <div class="home-buttons">
       <button class="primary" onclick="createRoom()">
-        创建房间
+        Create Room
       </button>
       <button onclick="location.href='/'">
-        返回首页
+        Back to Home
       </button>
     </div>
   </div>
@@ -25,55 +25,55 @@
   <!-- Host Lobby -->
   <div id="hostLobby" class="host-lobby hidden">
     <div class="room-code-display">
-      <h2>房间代码</h2>
+      <h2>Room Code</h2>
       <div class="room-code" id="roomCode">------</div>
       <p class="join-instructions">
-        让学生访问 <strong>game.studinlet.com/join</strong> 并输入此代码
+        Ask students to visit <strong>game.studinlet.com/join</strong> and enter this code
       </p>
     </div>
 
     <div class="lobby-stats">
       <div class="stat-item">
         <div class="stat-value" id="totalPlayers">0</div>
-        <div class="stat-label">总人数</div>
+        <div class="stat-label">Total Players</div>
       </div>
       <div class="stat-item">
         <div class="stat-value" id="team1Count">0</div>
-        <div class="stat-label">队伍 1</div>
+        <div class="stat-label">Team 1</div>
       </div>
       <div class="stat-item">
         <div class="stat-value" id="team2Count">0</div>
-        <div class="stat-label">队伍 2</div>
+        <div class="stat-label">Team 2</div>
       </div>
       <div class="stat-item">
         <div class="stat-value" id="unassignedCount">0</div>
-        <div class="stat-label">未分配</div>
+        <div class="stat-label">Unassigned</div>
       </div>
     </div>
 
     <div class="team-assignment">
       <div class="team-column unassigned">
-        <h3>未分配</h3>
+        <h3>Unassigned</h3>
         <div id="unassignedList" class="drop-zone" data-team="null"></div>
       </div>
 
       <div class="team-column team1">
-        <h3>队伍 1</h3>
+        <h3>Team 1</h3>
         <div id="team1List" class="drop-zone" data-team="TEAM1"></div>
       </div>
 
       <div class="team-column team2">
-        <h3>队伍 2</h3>
+        <h3>Team 2</h3>
         <div id="team2List" class="drop-zone" data-team="TEAM2"></div>
       </div>
     </div>
 
     <div class="host-controls">
       <button id="startGameBtn" class="primary" onclick="startGame()" disabled>
-        开始游戏
+        Start Game
       </button>
       <button onclick="endSession()">
-        结束会话
+        End Session
       </button>
     </div>
   </div>
@@ -85,7 +85,7 @@
     <div class="hud">
       <div class="hud-top">
         <div class="timer" id="timer">5:00</div>
-        <div class="player-count" id="playerCount">玩家: 0</div>
+        <div class="player-count" id="playerCount">Players: 0</div>
       </div>
     </div>
   </div>
@@ -93,35 +93,35 @@
   <!-- Host End Screen -->
   <div id="hostEndScreen" class="end-screen hidden">
     <div class="end-screen-content">
-      <h1>时间到！</h1>
+      <h1>Time's Up!</h1>
       <div class="accuracy-display" id="accuracyPercent">0%</div>
-      <p>全班分类准确率</p>
+      <p>Class Sorting Accuracy</p>
 
       <div class="end-stats">
         <div class="stat-row">
-          <span>正确人数:</span>
+          <span>Correct Players:</span>
           <span id="correctPlayers">0</span>
         </div>
         <div class="stat-row">
-          <span>总人数:</span>
+          <span>Total Players:</span>
           <span id="totalPlayersEnd">0</span>
         </div>
         <div class="stat-row">
-          <span><strong>队伍 1 准确率:</strong></span>
+          <span><strong>Team 1 Accuracy:</strong></span>
           <span id="team1Accuracy">0%</span>
         </div>
         <div class="stat-row">
-          <span><strong>队伍 2 准确率:</strong></span>
+          <span><strong>Team 2 Accuracy:</strong></span>
           <span id="team2Accuracy">0%</span>
         </div>
       </div>
 
       <div class="end-screen-buttons">
         <button class="primary" onclick="returnToLobby()">
-          返回大厅
+          Back to Lobby
         </button>
         <button onclick="endSession()">
-          结束会话
+          End Session
         </button>
       </div>
     </div>

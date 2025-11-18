@@ -52,12 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const playerName = document.getElementById('playerName').value.trim();
 
       if (!roomCodeInput) {
-        showError('请输入房间代码');
+        showError('Please enter a room code');
         return;
       }
 
       if (!playerName) {
-        showError('请输入你的名字');
+        showError('Please enter your name');
         return;
       }
 
@@ -95,7 +95,7 @@ function joinGame(code, name) {
 
   ws.onerror = (error) => {
     console.error('WebSocket error:', error);
-    showError('连接错误，请重试');
+    showError('Connection error. Please try again.');
   };
 
   ws.onclose = () => {
@@ -134,7 +134,7 @@ function handleMessage(data) {
       break;
 
     case 'SESSION_ENDED':
-      alert(data.message || '会话已结束');
+      alert(data.message || 'Session has ended');
       window.location.href = '/';
       break;
 
@@ -167,7 +167,7 @@ function updateGameState(data) {
   }
 
   if (data.players) {
-    document.getElementById('playerCount').textContent = `玩家: ${data.players.length}`;
+    document.getElementById('playerCount').textContent = `Players: ${data.players.length}`;
   }
 
   // Update dash cooldown UI
@@ -184,7 +184,7 @@ function updateDashUI(cooldown) {
   if (cooldown <= 0) {
     // Dash is ready
     dashFill.style.width = '100%';
-    dashStatus.textContent = '就绪';
+    dashStatus.textContent = 'READY';
     dashStatus.className = 'dash-status ready';
   } else {
     // Dash is on cooldown
@@ -205,11 +205,11 @@ function showEndScreen(data) {
   const endStats = document.getElementById('endStats');
   endStats.innerHTML = `
     <div class="stat-row">
-      <span>正确人数:</span>
+      <span>Correct Players:</span>
       <span>${data.correctPlayers}</span>
     </div>
     <div class="stat-row">
-      <span>总人数:</span>
+      <span>Total Players:</span>
       <span>${data.totalPlayers}</span>
     </div>
   `;

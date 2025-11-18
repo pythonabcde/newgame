@@ -1,57 +1,57 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>加入游戏 - Connection Sorting</title>
+  <title>Join Game - Connection Sorting</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <!-- Join Form -->
   <div id="joinForm" class="join-form">
-    <h1>加入游戏</h1>
+    <h1>Join Game</h1>
 
     <div id="errorMessage" class="error-message"></div>
 
     <form id="joinGameForm">
       <div class="form-group">
-        <label for="roomCode">房间代码</label>
-        <input type="text" id="roomCode" placeholder="输入6位房间代码" maxlength="6" required>
+        <label for="roomCode">Room Code</label>
+        <input type="text" id="roomCode" placeholder="Enter 6-digit room code" maxlength="6" required>
       </div>
 
       <div class="form-group">
-        <label for="playerName">你的名字</label>
-        <input type="text" id="playerName" placeholder="输入你的真实姓名" required>
+        <label for="playerName">Your Name</label>
+        <input type="text" id="playerName" placeholder="Enter your real name" required>
       </div>
 
       <button type="submit" class="primary" style="width: 100%; margin-top: 10px;">
-        加入游戏
+        Join Game
       </button>
     </form>
 
     <button onclick="location.href='/'" style="width: 100%; margin-top: 15px;">
-      返回首页
+      Back to Home
     </button>
   </div>
 
   <!-- Waiting Room -->
   <div id="waitingRoom" class="waiting-room hidden">
-    <h1>Connection Sorting - 游戏说明</h1>
+    <h1>Connection Sorting - How to Play</h1>
 
     <div class="instructions">
-      <h2>游戏规则：</h2>
+      <h2>Game Rules:</h2>
       <ol>
-        <li>你将控制共享世界中的一个<strong>灰色圆圈</strong>，但游戏不会告诉你哪个是你。</li>
-        <li>使用 <strong>WASD</strong> 或 <strong>方向键</strong> 移动。</li>
-        <li>按 <strong>空格键</strong> 冲刺：在最后的移动方向上进行短暂的速度爆发。</li>
-        <li>冲刺有<strong>冷却时间</strong>。你必须等待冲刺计量条恢复后才能再次冲刺。</li>
-        <li>两个彩色区域会在地图边缘移动。你的目标是与隐藏的队友一起进入正确的区域。</li>
-        <li>不能说话或指向屏幕，但你可以使用其他非语言信号（在课堂规则内）进行协调。</li>
+        <li>You control one <strong>gray circle</strong> in a shared world, but the game won't tell you which one.</li>
+        <li>Use <strong>WASD</strong> or <strong>arrow keys</strong> to move.</li>
+        <li>Press <strong>Spacebar</strong> to dash: a short speed burst in your last movement direction.</li>
+        <li>Dashing has a <strong>cooldown</strong>. You must wait for the dash meter to refill before dashing again.</li>
+        <li>Two colored zones move around the map edges. Your goal is to enter the correct zone with your hidden teammates.</li>
+        <li>No talking or pointing at the screen, but you can use other non-verbal signals (within classroom rules) to coordinate.</li>
       </ol>
     </div>
 
     <div class="waiting-message">
-      等待主持人开始游戏...
+      Waiting for host to start the game...
     </div>
   </div>
 
@@ -62,38 +62,38 @@
     <div class="hud">
       <div class="hud-top">
         <div class="timer" id="timer">5:00</div>
-        <div class="player-count" id="playerCount">玩家: 0</div>
+        <div class="player-count" id="playerCount">Players: 0</div>
       </div>
     </div>
 
     <div class="controls-hint">
-      <p><strong>移动:</strong> WASD 或 方向键 | <strong>冲刺:</strong> 空格键</p>
+      <p><strong>Move:</strong> WASD or Arrow Keys | <strong>Dash:</strong> Spacebar</p>
     </div>
 
     <div class="dash-cooldown">
-      <div class="dash-cooldown-label">冲刺</div>
+      <div class="dash-cooldown-label">Dash</div>
       <div class="dash-cooldown-bar">
         <div class="dash-cooldown-fill" id="dashFill"></div>
       </div>
-      <div class="dash-status ready" id="dashStatus">就绪</div>
+      <div class="dash-status ready" id="dashStatus">READY</div>
     </div>
   </div>
 
   <!-- End Screen -->
   <div id="endScreen" class="end-screen hidden">
     <div class="end-screen-content">
-      <h1>回合结束！</h1>
+      <h1>Round Finished!</h1>
       <div class="accuracy-display" id="accuracyPercent">0%</div>
-      <p id="accuracyText">分类准确率</p>
+      <p id="accuracyText">Sorting Accuracy</p>
 
       <div class="end-stats" id="endStats"></div>
 
       <div class="end-screen-buttons">
         <button class="primary" onclick="readyForNextRound()">
-          准备下一回合
+          Ready for Next Round
         </button>
         <button onclick="location.href='/'">
-          离开游戏
+          Leave Game
         </button>
       </div>
     </div>
