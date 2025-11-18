@@ -1,0 +1,17 @@
+{
+  "name": "connection-sorting-game",
+  "version": "1.0.0",
+  "description": "A real-time multiplayer classroom game - Connection Sorting",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js"
+  },
+  "keywords": ["game", "multiplayer", "classroom", "websocket"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2"
+  }
+}
