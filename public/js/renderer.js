@@ -18,10 +18,10 @@ class GameRenderer {
     const containerWidth = container.clientWidth || window.innerWidth;
     const containerHeight = container.clientHeight || window.innerHeight;
 
-    // Calculate scale to fit the map
+    // Calculate scale to fit the map (use 95% to ensure everything fits)
     const scaleX = containerWidth / this.mapWidth;
     const scaleY = containerHeight / this.mapHeight;
-    this.scale = Math.min(scaleX, scaleY) * 0.9; // 90% to leave some margin
+    this.scale = Math.min(scaleX, scaleY) * 0.95; // 95% to ensure zones stay visible
 
     // Calculate offsets to center the map
     this.offsetX = (containerWidth - this.mapWidth * this.scale) / 2;
