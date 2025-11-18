@@ -1,322 +1,322 @@
-# Connection Sorting 游戏部署指南
+# Connection Sorting Game Deployment Guide
 
-完整的生产环境部署指南，适用于Debian系统 + 家庭网络 + Cloudflare。
-
----
-
-## 📋 目录
-
-1. [系统要求](#系统要求)
-2. [准备工作](#准备工作)
-3. [服务器环境配置](#服务器环境配置)
-4. [项目部署](#项目部署)
-5. [SSL证书配置](#ssl证书配置)
-6. [Nginx配置](#nginx配置)
-7. [路由器端口映射](#路由器端口映射)
-8. [Cloudflare DNS配置](#cloudflare-dns配置)
-9. [启动和测试](#启动和测试)
-10. [维护和监控](#维护和监控)
-11. [故障排除](#故障排除)
+Complete production environment deployment guide for Debian systems + home network + Cloudflare.
 
 ---
 
-## 系统要求
+## 📋 Table of Contents
 
-### 硬件要求
-- **CPU**: 2核心或以上
-- **内存**: 至少2GB RAM
-- **存储**: 至少10GB可用空间
-- **网络**: 稳定的互联网连接，上下行至少10Mbps
-
-### 软件要求
-- **操作系统**: Debian 11/12 (或 Ubuntu 20.04/22.04)
-- **Node.js**: v18.x 或 v20.x LTS
-- **Nginx**: 最新稳定版
-- **PM2**: 最新版本
+1. [System Requirements](#system-requirements)
+2. [Preparation](#preparation)
+3. [Server Environment Configuration](#server-environment-configuration)
+4. [Project Deployment](#project-deployment)
+5. [SSL Certificate Configuration](#ssl-certificate-configuration)
+6. [Nginx Configuration](#nginx-configuration)
+7. [Router Port Mapping](#router-port-mapping)
+8. [Cloudflare DNS Configuration](#cloudflare-dns-configuration)
+9. [Startup and Testing](#startup-and-testing)
+10. [Maintenance and Monitoring](#maintenance-and-monitoring)
+11. [Troubleshooting](#troubleshooting)
 
 ---
 
-## 准备工作
+## System Requirements
 
-### 1. 获取Cloudflare API Token
+### Hardware Requirements
+- **CPU**: 2 cores or more
+- **Memory**: At least 2GB RAM
+- **Storage**: At least 10GB available space
+- **Network**: Stable internet connection, at least 10Mbps up/down
 
-1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. 进入 **My Profile** → **API Tokens**
-3. 点击 **Create Token**
-4. 选择 **Edit zone DNS** 模板
-5. 配置权限:
+### Software Requirements
+- **Operating System**: Debian 11/12 (or Ubuntu 20.04/22.04)
+- **Node.js**: v18.x or v20.x LTS
+- **Nginx**: Latest stable version
+- **PM2**: Latest version
+
+---
+
+## Preparation
+
+### 1. Obtain Cloudflare API Token
+
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Go to **My Profile** → **API Tokens**
+3. Click **Create Token**
+4. Select **Edit zone DNS** template
+5. Configure permissions:
    - **Zone** → **DNS** → **Edit**
-   - **Zone Resources**: 选择你的域名 `studinlet.com`
-6. 创建后**保存API Token**（只显示一次）
+   - **Zone Resources**: Select your domain `studinlet.com`
+6. After creation, **save the API Token** (only shown once)
 
-### 2. 记录你的信息
+### 2. Record Your Information
 
-准备以下信息:
+Prepare the following information:
 - Cloudflare API Token: `your-api-token-here`
-- 域名: `game.studinlet.com`
-- 邮箱: `your-email@example.com`
-- 内网服务器IP: 例如 `192.168.1.100`
+- Domain: `game.studinlet.com`
+- Email: `your-email@example.com`
+- Internal server IP: e.g., `192.168.1.100`
 
 ---
 
-## 服务器环境配置
+## Server Environment Configuration
 
-### 1. 更新系统
+### 1. Update System
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-### 2. 安装Node.js
+### 2. Install Node.js
 
 ```bash
-# 安装Node.js 20.x LTS
+# Install Node.js 20.x LTS
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# 验证安装
-node --version  # 应显示 v20.x.x
-npm --version   # 应显示 10.x.x
+# Verify installation
+node --version  # Should show v20.x.x
+npm --version   # Should show 10.x.x
 ```
 
-### 3. 安装PM2
+### 3. Install PM2
 
 ```bash
-# 全局安装PM2
+# Install PM2 globally
 sudo npm install -g pm2
 
-# 验证安装
+# Verify installation
 pm2 --version
 ```
 
-### 4. 安装Nginx
+### 4. Install Nginx
 
 ```bash
-# 安装Nginx
+# Install Nginx
 sudo apt install -y nginx
 
-# 启动并设置开机自启
+# Start and enable on boot
 sudo systemctl start nginx
 sudo systemctl enable nginx
 
-# 验证安装
+# Verify installation
 nginx -v
 ```
 
-### 5. 配置防火墙
+### 5. Configure Firewall
 
 ```bash
-# 安装UFW (如果未安装)
+# Install UFW (if not installed)
 sudo apt install -y ufw
 
-# 允许SSH
+# Allow SSH
 sudo ufw allow 22/tcp
 
-# 允许HTTP和HTTPS
+# Allow HTTP and HTTPS
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 
-# 启用防火墙
+# Enable firewall
 sudo ufw enable
 
-# 查看状态
+# Check status
 sudo ufw status
 ```
 
 ---
 
-## 项目部署
+## Project Deployment
 
-### 1. 克隆或上传项目
+### 1. Clone or Upload Project
 
-**方法A: 使用Git (推荐)**
+**Method A: Using Git (Recommended)**
 
 ```bash
-# 安装Git
+# Install Git
 sudo apt install -y git
 
-# 克隆项目
+# Clone project
 cd ~
 git clone https://github.com/your-username/newgame.git
 cd newgame
 ```
 
-**方法B: 手动上传**
+**Method B: Manual Upload**
 
-使用SCP或SFTP上传项目文件到服务器:
+Use SCP or SFTP to upload project files to server:
 
 ```bash
-# 在本地电脑上运行 (假设服务器IP是 192.168.1.100)
+# Run on local computer (assuming server IP is 192.168.1.100)
 scp -r /path/to/newgame user@192.168.1.100:~/
 ```
 
-### 2. 安装依赖
+### 2. Install Dependencies
 
 ```bash
 cd ~/newgame
 npm install
 ```
 
-### 3. 测试运行
+### 3. Test Run
 
 ```bash
-# 临时测试
+# Temporary test
 node server/index.js
 
-# 如果看到以下输出说明成功:
+# If you see the following output, it's successful:
 # Server running on port 3000
 # WebSocket server ready
 ```
 
-按 `Ctrl+C` 停止测试。
+Press `Ctrl+C` to stop the test.
 
 ---
 
-## SSL证书配置
+## SSL Certificate Configuration
 
-### 1. 修改SSL配置脚本
+### 1. Modify SSL Configuration Script
 
-编辑 SSL 配置脚本:
+Edit the SSL configuration script:
 
 ```bash
 nano ~/newgame/deployment/ssl-setup.sh
 ```
 
-修改以下变量:
+Modify the following variables:
 
 ```bash
-EMAIL="your-email@example.com"              # 改成你的邮箱
-CLOUDFLARE_API_TOKEN="your-api-token-here"  # 改成你的Cloudflare API Token
+EMAIL="your-email@example.com"              # Change to your email
+CLOUDFLARE_API_TOKEN="your-api-token-here"  # Change to your Cloudflare API Token
 ```
 
-保存并退出 (`Ctrl+X`, 然后 `Y`, 然后 `Enter`)
+Save and exit (`Ctrl+X`, then `Y`, then `Enter`)
 
-### 2. 运行SSL配置脚本
+### 2. Run SSL Configuration Script
 
 ```bash
 sudo bash ~/newgame/deployment/ssl-setup.sh
 ```
 
-脚本会自动:
-- 安装certbot和cloudflare插件
-- 申请SSL证书
-- 配置自动续期
+The script will automatically:
+- Install certbot and cloudflare plugin
+- Request SSL certificate
+- Configure automatic renewal
 
-如果成功,你会看到:
+If successful, you will see:
 
 ```
-SSL证书申请成功！
-证书位置: /etc/letsencrypt/live/game.studinlet.com/
+SSL certificate request successful!
+Certificate location: /etc/letsencrypt/live/game.studinlet.com/
 ```
 
-### 3. 验证证书
+### 3. Verify Certificate
 
 ```bash
 sudo certbot certificates
 ```
 
-应该看到你的证书信息。
+You should see your certificate information.
 
 ---
 
-## Nginx配置
+## Nginx Configuration
 
-### 1. 复制Nginx配置文件
+### 1. Copy Nginx Configuration File
 
 ```bash
 sudo cp ~/newgame/deployment/nginx.conf /etc/nginx/sites-available/game.studinlet.com
 ```
 
-### 2. 创建符号链接
+### 2. Create Symbolic Link
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/game.studinlet.com /etc/nginx/sites-enabled/
 ```
 
-### 3. 删除默认配置 (可选)
+### 3. Remove Default Configuration (Optional)
 
 ```bash
 sudo rm /etc/nginx/sites-enabled/default
 ```
 
-### 4. 测试Nginx配置
+### 4. Test Nginx Configuration
 
 ```bash
 sudo nginx -t
 ```
 
-应该看到:
+You should see:
 
 ```
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 ```
 
-### 5. 重启Nginx
+### 5. Restart Nginx
 
 ```bash
 sudo systemctl restart nginx
 ```
 
-### 6. 检查Nginx状态
+### 6. Check Nginx Status
 
 ```bash
 sudo systemctl status nginx
 ```
 
-应该显示 `active (running)`。
+Should display `active (running)`.
 
 ---
 
-## 路由器端口映射
+## Router Port Mapping
 
-### 配置步骤
+### Configuration Steps
 
-1. **登录路由器管理界面**
-   - 通常是 `192.168.1.1` 或 `192.168.0.1`
-   - 使用路由器管理员账号密码登录
+1. **Log in to Router Management Interface**
+   - Usually `192.168.1.1` or `192.168.0.1`
+   - Log in with router admin credentials
 
-2. **找到端口映射/端口转发设置**
-   - 不同路由器界面不同,可能叫:
+2. **Find Port Mapping/Port Forwarding Settings**
+   - Different router interfaces vary, may be called:
      - Port Forwarding
      - Virtual Server
-     - NAT设置
-     - 端口映射
+     - NAT Settings
+     - Port Mapping
 
-3. **添加端口映射规则**
+3. **Add Port Mapping Rules**
 
-   创建以下两条规则:
+   Create the following two rules:
 
-   **规则1: HTTP (端口80)**
-   - 服务名称: `HTTP`
-   - 外部端口: `80`
-   - 内部IP: `192.168.1.100` (你的Debian服务器内网IP)
-   - 内部端口: `80`
-   - 协议: `TCP`
+   **Rule 1: HTTP (Port 80)**
+   - Service Name: `HTTP`
+   - External Port: `80`
+   - Internal IP: `192.168.1.100` (your Debian server's internal IP)
+   - Internal Port: `80`
+   - Protocol: `TCP`
 
-   **规则2: HTTPS (端口443)**
-   - 服务名称: `HTTPS`
-   - 外部端口: `443`
-   - 内部IP: `192.168.1.100`
-   - 内部端口: `443`
-   - 协议: `TCP`
+   **Rule 2: HTTPS (Port 443)**
+   - Service Name: `HTTPS`
+   - External Port: `443`
+   - Internal IP: `192.168.1.100`
+   - Internal Port: `443`
+   - Protocol: `TCP`
 
-4. **保存并应用设置**
+4. **Save and Apply Settings**
 
-### 验证端口映射
+### Verify Port Mapping
 
 ```bash
-# 在服务器上安装netcat
+# Install netcat on server
 sudo apt install -y netcat
 
-# 测试80端口
+# Test port 80
 sudo nc -l 80
 
-# 在另一台电脑或手机上(使用移动网络,不要用家里WiFi)访问:
-# http://你的公网IP
-# 如果能连接,说明端口映射成功
+# On another computer or mobile (use mobile network, not home WiFi) access:
+# http://your-public-IP
+# If it can connect, port mapping is successful
 ```
 
-### 查看公网IP
+### Check Public IP
 
 ```bash
 curl ifconfig.me
@@ -324,76 +324,76 @@ curl ifconfig.me
 
 ---
 
-## Cloudflare DNS配置
+## Cloudflare DNS Configuration
 
-### 1. 登录Cloudflare
+### 1. Log in to Cloudflare
 
-访问 [Cloudflare Dashboard](https://dash.cloudflare.com/)
+Visit [Cloudflare Dashboard](https://dash.cloudflare.com/)
 
-### 2. 选择你的域名
+### 2. Select Your Domain
 
-点击 `studinlet.com`
+Click `studinlet.com`
 
-### 3. 添加DNS记录
+### 3. Add DNS Record
 
-进入 **DNS** → **Records**
+Go to **DNS** → **Records**
 
-点击 **Add record**:
+Click **Add record**:
 
 - **Type**: `A`
 - **Name**: `game`
-- **IPv4 address**: 你的公网IP (通过 `curl ifconfig.me` 获取)
+- **IPv4 address**: Your public IP (obtained via `curl ifconfig.me`)
 - **Proxy status**:
-  - **橙色云朵** (Proxied) - 推荐,启用Cloudflare CDN和防护
-  - 或 **灰色云朵** (DNS only) - 直连,不经过Cloudflare
+  - **Orange cloud** (Proxied) - Recommended, enables Cloudflare CDN and protection
+  - Or **Gray cloud** (DNS only) - Direct connection, not through Cloudflare
 - **TTL**: Auto
 
-点击 **Save**
+Click **Save**
 
-### 4. 等待DNS传播
+### 4. Wait for DNS Propagation
 
-通常需要几分钟,最多24小时。
+Usually takes a few minutes, up to 24 hours maximum.
 
-验证DNS:
+Verify DNS:
 
 ```bash
 nslookup game.studinlet.com
 ```
 
-应该返回你的公网IP。
+Should return your public IP.
 
 ---
 
-## 启动和测试
+## Startup and Testing
 
-### 1. 配置PM2
+### 1. Configure PM2
 
-修改PM2配置文件:
+Modify PM2 configuration file:
 
 ```bash
 nano ~/newgame/deployment/ecosystem.config.js
 ```
 
-确认路径正确:
+Confirm the path is correct:
 
 ```javascript
-cwd: '/home/user/newgame',  // 改成你的实际路径,例如 /home/youruser/newgame
+cwd: '/home/user/newgame',  // Change to your actual path, e.g., /home/youruser/newgame
 ```
 
-### 2. 使用PM2启动应用
+### 2. Start Application with PM2
 
 ```bash
 cd ~/newgame
 pm2 start deployment/ecosystem.config.js
 ```
 
-### 3. 查看应用状态
+### 3. Check Application Status
 
 ```bash
 pm2 status
 ```
 
-应该看到:
+You should see:
 
 ```
 ┌────┬────────────────────────────┬─────────┬──────┐
@@ -403,244 +403,244 @@ pm2 status
 └────┴────────────────────────────┴─────────┴──────┘
 ```
 
-### 4. 查看日志
+### 4. View Logs
 
 ```bash
-# 实时查看日志
+# View logs in real-time
 pm2 logs
 
-# 查看错误日志
+# View error logs
 pm2 logs --err
 
-# 查看输出日志
+# View output logs
 pm2 logs --out
 ```
 
-### 5. 设置PM2开机自启
+### 5. Set PM2 to Start on Boot
 
 ```bash
-# 保存当前PM2进程列表
+# Save current PM2 process list
 pm2 save
 
-# 生成开机自启脚本
+# Generate startup script
 pm2 startup
 
-# 按照提示运行显示的命令,例如:
+# Run the command shown in the output, for example:
 # sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u user --hp /home/user
 ```
 
-### 6. 测试访问
+### 6. Test Access
 
-在浏览器中访问:
+Access in your browser:
 
 ```
 https://game.studinlet.com
 ```
 
-你应该看到游戏首页！
+You should see the game homepage!
 
 ---
 
-## 维护和监控
+## Maintenance and Monitoring
 
-### PM2 常用命令
+### Common PM2 Commands
 
 ```bash
-# 查看状态
+# Check status
 pm2 status
 
-# 重启应用
+# Restart application
 pm2 restart connection-sorting-game
 
-# 停止应用
+# Stop application
 pm2 stop connection-sorting-game
 
-# 查看日志
+# View logs
 pm2 logs connection-sorting-game
 
-# 查看详细信息
+# View detailed information
 pm2 info connection-sorting-game
 
-# 监控资源使用
+# Monitor resource usage
 pm2 monit
 
-# 更新代码后重启
+# Restart after code update
 cd ~/newgame
 git pull
 npm install
 pm2 restart connection-sorting-game
 ```
 
-### 日志管理
+### Log Management
 
 ```bash
-# PM2日志位置
+# PM2 log location
 /var/log/pm2/connection-sorting-error.log
 /var/log/pm2/connection-sorting-out.log
 
-# Nginx日志位置
+# Nginx log location
 /var/log/nginx/game.studinlet.com_access.log
 /var/log/nginx/game.studinlet.com_error.log
 
-# 清理旧日志
+# Clean old logs
 pm2 flush
 ```
 
-### SSL证书自动续期
+### SSL Certificate Auto-renewal
 
-Certbot会自动续期证书,你也可以手动测试:
+Certbot will automatically renew certificates, but you can also test manually:
 
 ```bash
-# 测试续期 (不会真的续期)
+# Test renewal (won't actually renew)
 sudo certbot renew --dry-run
 
-# 强制续期
+# Force renewal
 sudo certbot renew --force-renewal
 ```
 
-### 系统监控
+### System Monitoring
 
 ```bash
-# 查看系统资源
+# View system resources
 htop
 
-# 查看磁盘使用
+# View disk usage
 df -h
 
-# 查看内存使用
+# View memory usage
 free -h
 
-# 查看网络连接
+# View network connections
 ss -tunlp
 ```
 
 ---
 
-## 故障排除
+## Troubleshooting
 
-### 问题1: 无法访问网站
+### Issue 1: Cannot Access Website
 
-**检查步骤:**
+**Troubleshooting Steps:**
 
-1. **检查Node.js应用是否运行**
+1. **Check if Node.js application is running**
    ```bash
    pm2 status
    pm2 logs
    ```
 
-2. **检查Nginx是否运行**
+2. **Check if Nginx is running**
    ```bash
    sudo systemctl status nginx
    sudo nginx -t
    ```
 
-3. **检查端口是否监听**
+3. **Check if ports are listening**
    ```bash
    sudo netstat -tulnp | grep :3000  # Node.js
    sudo netstat -tulnp | grep :80    # Nginx HTTP
    sudo netstat -tulnp | grep :443   # Nginx HTTPS
    ```
 
-4. **检查防火墙**
+4. **Check firewall**
    ```bash
    sudo ufw status
    ```
 
-5. **检查路由器端口映射**
-   - 确认外网能访问你的公网IP:80和443端口
+5. **Check router port mapping**
+   - Confirm external access to your public IP ports 80 and 443
 
-6. **检查DNS解析**
+6. **Check DNS resolution**
    ```bash
    nslookup game.studinlet.com
    ```
 
-### 问题2: SSL证书错误
+### Issue 2: SSL Certificate Error
 
-**检查步骤:**
+**Troubleshooting Steps:**
 
-1. **验证证书**
+1. **Verify certificate**
    ```bash
    sudo certbot certificates
    ```
 
-2. **检查证书文件**
+2. **Check certificate files**
    ```bash
    sudo ls -la /etc/letsencrypt/live/game.studinlet.com/
    ```
 
-3. **重新申请证书**
+3. **Reapply for certificate**
    ```bash
    sudo certbot delete --cert-name game.studinlet.com
    sudo bash ~/newgame/deployment/ssl-setup.sh
    ```
 
-### 问题3: WebSocket连接失败
+### Issue 3: WebSocket Connection Failed
 
-**检查步骤:**
+**Troubleshooting Steps:**
 
-1. **检查Nginx配置**
+1. **Check Nginx configuration**
    ```bash
    sudo nginx -t
    grep -A 20 "location /" /etc/nginx/sites-available/game.studinlet.com
    ```
 
-2. **确认有WebSocket升级头**
+2. **Confirm WebSocket upgrade headers exist**
    ```nginx
    proxy_set_header Upgrade $http_upgrade;
    proxy_set_header Connection "upgrade";
    ```
 
-3. **检查Cloudflare设置**
-   - 如果使用Cloudflare代理,确保WebSocket已启用
+3. **Check Cloudflare settings**
+   - If using Cloudflare proxy, ensure WebSocket is enabled
    - Cloudflare Dashboard → Network → WebSocket: ON
 
-### 问题4: 游戏卡顿或延迟高
+### Issue 4: Game Lag or High Latency
 
-**优化步骤:**
+**Optimization Steps:**
 
-1. **检查服务器资源**
+1. **Check server resources**
    ```bash
    htop
    pm2 monit
    ```
 
-2. **优化Nginx**
-   - 增加worker进程
-   - 调整缓冲区大小
+2. **Optimize Nginx**
+   - Increase worker processes
+   - Adjust buffer sizes
 
-3. **检查网络**
+3. **Check network**
    ```bash
    ping -c 10 game.studinlet.com
    traceroute game.studinlet.com
    ```
 
-### 问题5: PM2应用频繁重启
+### Issue 5: PM2 Application Frequently Restarts
 
-**检查步骤:**
+**Troubleshooting Steps:**
 
-1. **查看错误日志**
+1. **View error logs**
    ```bash
    pm2 logs --err
    ```
 
-2. **增加内存限制**
-   编辑 `ecosystem.config.js`:
+2. **Increase memory limit**
+   Edit `ecosystem.config.js`:
    ```javascript
-   max_memory_restart: '1G',  // 改成1GB
+   max_memory_restart: '1G',  // Change to 1GB
    ```
 
-3. **检查Node.js版本**
+3. **Check Node.js version**
    ```bash
    node --version
    ```
 
 ---
 
-## 性能优化建议
+## Performance Optimization Suggestions
 
-### 1. 启用Gzip压缩
+### 1. Enable Gzip Compression
 
-编辑 `/etc/nginx/nginx.conf`:
+Edit `/etc/nginx/nginx.conf`:
 
 ```nginx
 gzip on;
@@ -651,40 +651,40 @@ gzip_types text/plain text/css text/xml text/javascript
            application/javascript application/json;
 ```
 
-### 2. 静态文件缓存
+### 2. Static File Caching
 
-已在Nginx配置中包含,确认启用。
+Already included in Nginx configuration, confirm it's enabled.
 
-### 3. 使用Cloudflare CDN
+### 3. Use Cloudflare CDN
 
-建议启用Cloudflare代理 (橙色云朵),可以:
-- 加速全球访问
-- 隐藏真实IP
-- 防DDoS攻击
-- 自动HTTPS
+Recommended to enable Cloudflare proxy (orange cloud), which provides:
+- Accelerated global access
+- Hide real IP
+- DDoS protection
+- Automatic HTTPS
 
-### 4. 定期更新
+### 4. Regular Updates
 
 ```bash
-# 更新系统
+# Update system
 sudo apt update && sudo apt upgrade -y
 
-# 更新Node.js依赖
+# Update Node.js dependencies
 cd ~/newgame
 npm update
 
-# 更新PM2
+# Update PM2
 sudo npm update -g pm2
 ```
 
 ---
 
-## 备份建议
+## Backup Recommendations
 
-### 定期备份重要文件
+### Regular Backup of Important Files
 
 ```bash
-# 创建备份脚本
+# Create backup script
 cat > ~/backup-game.sh <<'EOF'
 #!/bin/bash
 BACKUP_DIR=~/backups
@@ -692,13 +692,13 @@ DATE=$(date +%Y%m%d_%H%M%S)
 
 mkdir -p $BACKUP_DIR
 
-# 备份项目
+# Backup project
 tar -czf $BACKUP_DIR/newgame_$DATE.tar.gz ~/newgame
 
-# 备份Nginx配置
+# Backup Nginx configuration
 sudo cp /etc/nginx/sites-available/game.studinlet.com $BACKUP_DIR/nginx_$DATE.conf
 
-# 删除30天前的备份
+# Delete backups older than 30 days
 find $BACKUP_DIR -name "*.tar.gz" -mtime +30 -delete
 
 echo "Backup completed: $BACKUP_DIR/newgame_$DATE.tar.gz"
@@ -706,30 +706,30 @@ EOF
 
 chmod +x ~/backup-game.sh
 
-# 设置定时备份 (每天凌晨2点)
+# Set up scheduled backup (every day at 2 AM)
 (crontab -l 2>/dev/null; echo "0 2 * * * ~/backup-game.sh") | crontab -
 ```
 
 ---
 
-## 安全建议
+## Security Recommendations
 
-1. **定期更新系统和软件**
-2. **使用强密码**
-3. **启用SSH密钥认证,禁用密码登录**
-4. **配置fail2ban防暴力破解**
-5. **定期查看日志**
-6. **限制SSH访问IP**
-
----
-
-## 联系和支持
-
-如有问题,请检查:
-1. 游戏日志: `pm2 logs`
-2. Nginx日志: `/var/log/nginx/`
-3. 系统日志: `journalctl -xe`
+1. **Regularly update system and software**
+2. **Use strong passwords**
+3. **Enable SSH key authentication, disable password login**
+4. **Configure fail2ban to prevent brute force attacks**
+5. **Regularly check logs**
+6. **Restrict SSH access by IP**
 
 ---
 
-**祝你部署成功！🎉**
+## Contact and Support
+
+If you have issues, check:
+1. Game logs: `pm2 logs`
+2. Nginx logs: `/var/log/nginx/`
+3. System logs: `journalctl -xe`
+
+---
+
+**Wishing you a successful deployment! 🎉**

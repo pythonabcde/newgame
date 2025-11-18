@@ -1,336 +1,336 @@
-# 🚀 快速部署清单
+# 🚀 Quick Deployment Checklist
 
-针对你的环境（Debian + 家庭网络 + Cloudflare + game.studinlet.com）的快速部署步骤。
-
----
-
-## ✅ 部署前检查清单
-
-在开始之前，确保你有：
-
-- [ ] Debian服务器（已联网）
-- [ ] 公网IP地址
-- [ ] 路由器管理权限
-- [ ] Cloudflare账号和API Token
-- [ ] 域名 studinlet.com 已托管在Cloudflare
+Quick deployment steps for your environment (Debian + Home Network + Cloudflare + game.studinlet.com).
 
 ---
 
-## 📝 准备工作
+## ✅ Pre-Deployment Checklist
 
-### 1. 获取Cloudflare API Token
+Before you begin, make sure you have:
+
+- [ ] Debian server (with internet connection)
+- [ ] Public IP address
+- [ ] Router administrator access
+- [ ] Cloudflare account and API Token
+- [ ] Domain studinlet.com hosted on Cloudflare
+
+---
+
+## 📝 Preparation
+
+### 1. Get Cloudflare API Token
 
 ```
-1. 访问: https://dash.cloudflare.com/profile/api-tokens
-2. 点击 "Create Token"
-3. 选择 "Edit zone DNS" 模板
+1. Visit: https://dash.cloudflare.com/profile/api-tokens
+2. Click "Create Token"
+3. Select "Edit zone DNS" template
 4. Zone Resources: studinlet.com
-5. 创建并保存Token（只显示一次！）
+5. Create and save the Token (only shown once!)
 ```
 
-**保存你的Token**: `_______________________________________`
+**Save your Token**: `_______________________________________`
 
-### 2. 记录你的信息
+### 2. Record Your Information
 
-- **内网IP**: `_______________________` (例如: 192.168.1.100)
-- **公网IP**: `_______________________` (运行 `curl ifconfig.me` 获取)
-- **邮箱**: `_______________________`
+- **Private IP**: `_______________________` (e.g., 192.168.1.100)
+- **Public IP**: `_______________________` (Run `curl ifconfig.me` to get it)
+- **Email**: `_______________________`
 
 ---
 
-## 🔧 部署步骤 (约30分钟)
+## 🔧 Deployment Steps (Approximately 30 minutes)
 
-### 第一步: 基础环境 (10分钟)
+### Step 1: Basic Environment (10 minutes)
 
 ```bash
-# 1. 更新系统
+# 1. Update system
 sudo apt update && sudo apt upgrade -y
 
-# 2. 安装Node.js 20.x
+# 2. Install Node.js 20.x
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 sudo apt install -y nodejs
 
-# 3. 安装其他工具
+# 3. Install other tools
 sudo apt install -y nginx git
 sudo npm install -g pm2
 
-# 4. 验证安装
-node --version    # 应该是 v20.x.x
-nginx -v          # 应该显示版本号
-pm2 --version     # 应该显示版本号
+# 4. Verify installation
+node --version    # Should be v20.x.x
+nginx -v          # Should show version number
+pm2 --version     # Should show version number
 ```
 
-### 第二步: 下载项目 (2分钟)
+### Step 2: Download Project (2 minutes)
 
 ```bash
-# 克隆项目
+# Clone project
 cd ~
 git clone https://github.com/pythonabcde/newgame.git
 cd newgame
 
-# 安装依赖
+# Install dependencies
 npm install
 ```
 
-### 第三步: SSL证书 (5分钟)
+### Step 3: SSL Certificate (5 minutes)
 
 ```bash
-# 1. 编辑SSL配置脚本
+# 1. Edit SSL configuration script
 nano deployment/ssl-setup.sh
 
-# 修改这两行:
-#   EMAIL="your-email@example.com"              # 改成你的邮箱
-#   CLOUDFLARE_API_TOKEN="your-api-token-here"  # 改成你的Token
+# Modify these two lines:
+#   EMAIL="your-email@example.com"              # Change to your email
+#   CLOUDFLARE_API_TOKEN="your-api-token-here"  # Change to your Token
 
-# 2. 运行脚本
+# 2. Run the script
 sudo bash deployment/ssl-setup.sh
 
-# 如果成功，会显示:
-# "SSL证书申请成功！"
+# If successful, it will display:
+# "SSL certificate application successful!"
 ```
 
-### 第四步: Nginx配置 (3分钟)
+### Step 4: Nginx Configuration (3 minutes)
 
 ```bash
-# 1. 复制配置文件
+# 1. Copy configuration file
 sudo cp deployment/nginx.conf /etc/nginx/sites-available/game.studinlet.com
 
-# 2. 创建软链接
+# 2. Create symbolic link
 sudo ln -s /etc/nginx/sites-available/game.studinlet.com /etc/nginx/sites-enabled/
 
-# 3. 删除默认配置
+# 3. Remove default configuration
 sudo rm /etc/nginx/sites-enabled/default
 
-# 4. 测试配置
+# 4. Test configuration
 sudo nginx -t
 
-# 应该显示: "syntax is ok" 和 "test is successful"
+# Should display: "syntax is ok" and "test is successful"
 
-# 5. 重启Nginx
+# 5. Restart Nginx
 sudo systemctl restart nginx
 
-# 6. 检查状态
+# 6. Check status
 sudo systemctl status nginx
-# 应该显示 "active (running)"
+# Should display "active (running)"
 ```
 
-### 第五步: 启动游戏服务 (2分钟)
+### Step 5: Start Game Service (2 minutes)
 
 ```bash
-# 1. 修改PM2配置（如果路径不同）
+# 1. Modify PM2 configuration (if path is different)
 nano deployment/ecosystem.config.js
-# 确认 cwd 路径正确，例如: cwd: '/home/youruser/newgame'
+# Confirm the cwd path is correct, e.g.: cwd: '/home/youruser/newgame'
 
-# 2. 启动应用
+# 2. Start application
 pm2 start deployment/ecosystem.config.js
 
-# 3. 查看状态
+# 3. Check status
 pm2 status
-# 应该显示 "online"
+# Should display "online"
 
-# 4. 设置开机自启
+# 4. Set up auto-start on boot
 pm2 save
 pm2 startup
-# 按照提示运行显示的命令
+# Run the command shown in the prompt
 
-# 5. 查看日志
+# 5. View logs
 pm2 logs
 ```
 
-### 第六步: 防火墙配置 (2分钟)
+### Step 6: Firewall Configuration (2 minutes)
 
 ```bash
-# 1. 安装并配置UFW
+# 1. Install and configure UFW
 sudo apt install -y ufw
 
-# 2. 允许必要端口
+# 2. Allow necessary ports
 sudo ufw allow 22/tcp   # SSH
 sudo ufw allow 80/tcp   # HTTP
 sudo ufw allow 443/tcp  # HTTPS
 
-# 3. 启用防火墙
+# 3. Enable firewall
 sudo ufw enable
 
-# 4. 查看状态
+# 4. Check status
 sudo ufw status
 ```
 
-### 第七步: 路由器端口映射 (5分钟)
+### Step 7: Router Port Forwarding (5 minutes)
 
-**在路由器管理界面操作：**
+**Operations in router management interface:**
 
-1. 登录路由器（通常是 192.168.1.1 或 192.168.0.1）
+1. Log in to your router (usually 192.168.1.1 or 192.168.0.1)
 
-2. 找到 "端口映射" 或 "Port Forwarding" 设置
+2. Find "Port Forwarding" or "Port Mapping" settings
 
-3. 添加以下规则：
+3. Add the following rules:
 
-**规则1 - HTTP:**
+**Rule 1 - HTTP:**
 ```
-名称: HTTP
-外部端口: 80
-内部IP: 192.168.1.100 (你的Debian服务器IP)
-内部端口: 80
-协议: TCP
-```
-
-**规则2 - HTTPS:**
-```
-名称: HTTPS
-外部端口: 443
-内部IP: 192.168.1.100
-内部端口: 443
-协议: TCP
+Name: HTTP
+External Port: 80
+Internal IP: 192.168.1.100 (Your Debian server IP)
+Internal Port: 80
+Protocol: TCP
 ```
 
-4. 保存并应用
+**Rule 2 - HTTPS:**
+```
+Name: HTTPS
+External Port: 443
+Internal IP: 192.168.1.100
+Internal Port: 443
+Protocol: TCP
+```
 
-5. **验证端口映射:**
+4. Save and apply
+
+5. **Verify port forwarding:**
 ```bash
-# 在外网（用手机流量或其他网络）访问:
-http://你的公网IP
+# From external network (use mobile data or another network), access:
+http://your-public-ip
 
-# 如果能看到Nginx页面或游戏，说明成功！
+# If you can see the Nginx page or the game, it's successful!
 ```
 
-### 第八步: Cloudflare DNS配置 (5分钟)
+### Step 8: Cloudflare DNS Configuration (5 minutes)
 
-1. **登录Cloudflare Dashboard**
-   - 访问: https://dash.cloudflare.com
+1. **Log in to Cloudflare Dashboard**
+   - Visit: https://dash.cloudflare.com
 
-2. **选择域名**
-   - 点击 `studinlet.com`
+2. **Select Domain**
+   - Click `studinlet.com`
 
-3. **添加DNS记录**
-   - 进入 "DNS" → "Records"
-   - 点击 "Add record"
+3. **Add DNS Record**
+   - Go to "DNS" → "Records"
+   - Click "Add record"
 
-**配置:**
+**Configuration:**
 ```
 Type: A
 Name: game
-IPv4 address: [你的公网IP]
-Proxy status: ✅ Proxied (橙色云朵，推荐)
+IPv4 address: [Your public IP]
+Proxy status: ✅ Proxied (Orange cloud, recommended)
 TTL: Auto
 ```
 
-4. **保存**
+4. **Save**
 
-5. **等待DNS生效** (通常1-5分钟)
+5. **Wait for DNS propagation** (Usually 1-5 minutes)
 
-6. **验证DNS:**
+6. **Verify DNS:**
 ```bash
 nslookup game.studinlet.com
-# 应该返回你的公网IP或Cloudflare的IP
+# Should return your public IP or Cloudflare's IP
 ```
 
 ---
 
-## 🎉 测试访问
+## 🎉 Test Access
 
-在浏览器访问:
+In your browser, visit:
 
 ```
 https://game.studinlet.com
 ```
 
-你应该看到游戏首页！
+You should see the game homepage!
 
-### 测试游戏流程:
+### Test Game Flow:
 
-1. **主持人**: 访问 `https://game.studinlet.com/host`
-   - 点击"创建房间"
-   - 记下6位房间代码
+1. **Host**: Visit `https://game.studinlet.com/host`
+   - Click "Create Room"
+   - Note the 6-digit room code
 
-2. **玩家** (用手机或其他设备): 访问 `https://game.studinlet.com/join`
-   - 输入房间代码和名字
-   - 加入游戏
+2. **Players** (using phone or other devices): Visit `https://game.studinlet.com/join`
+   - Enter room code and name
+   - Join the game
 
-3. **主持人**:
-   - 将玩家拖拽到两个队伍
-   - 点击"开始游戏"
+3. **Host**:
+   - Drag players to two teams
+   - Click "Start Game"
 
-4. **玩家**:
-   - 使用WASD或方向键移动
-   - 空格键冲刺
+4. **Players**:
+   - Use WASD or arrow keys to move
+   - Spacebar to dash
 
 ---
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### 无法访问网站？
+### Cannot Access Website?
 
 ```bash
-# 1. 检查Node.js应用
+# 1. Check Node.js application
 pm2 status
 pm2 logs
 
-# 2. 检查Nginx
+# 2. Check Nginx
 sudo systemctl status nginx
 sudo nginx -t
 
-# 3. 检查端口监听
+# 3. Check port listening
 sudo netstat -tulnp | grep :3000  # Node.js
 sudo netstat -tulnp | grep :80     # HTTP
 sudo netstat -tulnp | grep :443    # HTTPS
 
-# 4. 检查防火墙
+# 4. Check firewall
 sudo ufw status
 
-# 5. 测试本地访问
+# 5. Test local access
 curl http://localhost:3000
 ```
 
-### SSL证书问题？
+### SSL Certificate Issues?
 
 ```bash
-# 检查证书
+# Check certificate
 sudo certbot certificates
 
-# 重新申请
+# Reapply
 sudo certbot delete --cert-name game.studinlet.com
 sudo bash ~/newgame/deployment/ssl-setup.sh
 ```
 
-### WebSocket连接失败？
+### WebSocket Connection Failed?
 
 ```bash
-# 检查Nginx配置
+# Check Nginx configuration
 sudo nginx -t
 sudo systemctl restart nginx
 
-# 如果用了Cloudflare代理，确保WebSocket已启用
+# If using Cloudflare proxy, make sure WebSocket is enabled
 # Cloudflare Dashboard → Network → WebSocket: ON
 ```
 
 ---
 
-## 📊 监控和维护
+## 📊 Monitoring and Maintenance
 
-### 查看日志
+### View Logs
 
 ```bash
-# PM2日志
+# PM2 logs
 pm2 logs
 
-# Nginx访问日志
+# Nginx access logs
 sudo tail -f /var/log/nginx/game.studinlet.com_access.log
 
-# Nginx错误日志
+# Nginx error logs
 sudo tail -f /var/log/nginx/game.studinlet.com_error.log
 ```
 
-### 重启服务
+### Restart Services
 
 ```bash
-# 重启游戏
+# Restart game
 pm2 restart connection-sorting-game
 
-# 重启Nginx
+# Restart Nginx
 sudo systemctl restart nginx
 ```
 
-### 更新代码
+### Update Code
 
 ```bash
 cd ~/newgame
@@ -341,26 +341,26 @@ pm2 restart connection-sorting-game
 
 ---
 
-## 📚 更多信息
+## 📚 More Information
 
-- **完整部署文档**: 查看 `DEPLOYMENT.md`
-- **游戏说明**: 查看 `README.md`
-- **原始设计文档**: 查看 `game.md`
-
----
-
-## ✅ 部署完成检查
-
-- [ ] 服务器环境已配置 (Node.js, Nginx, PM2)
-- [ ] SSL证书已申请成功
-- [ ] Nginx配置已完成并运行
-- [ ] 游戏服务已启动 (pm2 status 显示 online)
-- [ ] 防火墙已配置
-- [ ] 路由器端口映射已设置
-- [ ] Cloudflare DNS已配置
-- [ ] 可以通过 https://game.studinlet.com 访问
-- [ ] 游戏功能正常（主持人创建房间，玩家加入）
+- **Complete Deployment Documentation**: See `DEPLOYMENT.md`
+- **Game Instructions**: See `README.md`
+- **Original Design Documentation**: See `game.md`
 
 ---
 
-**祝你部署成功！如有问题，请查看 DEPLOYMENT.md 获取详细帮助。** 🎮🚀
+## ✅ Deployment Completion Checklist
+
+- [ ] Server environment configured (Node.js, Nginx, PM2)
+- [ ] SSL certificate successfully applied
+- [ ] Nginx configuration completed and running
+- [ ] Game service started (pm2 status shows online)
+- [ ] Firewall configured
+- [ ] Router port forwarding set up
+- [ ] Cloudflare DNS configured
+- [ ] Can access via https://game.studinlet.com
+- [ ] Game functions properly (Host creates room, players join)
+
+---
+
+**Wishing you a successful deployment! If you have any issues, please see DEPLOYMENT.md for detailed help.** 🎮🚀
