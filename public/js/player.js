@@ -149,7 +149,7 @@ function startGameView() {
   showView('gameView');
 
   const canvas = document.getElementById('gameCanvas');
-  renderer = new GameRenderer(canvas);
+  renderer = new GameRenderer(canvas, playerId); // Pass playerId to highlight current player
 
   // Start sending input
   startInputLoop();
