@@ -5,7 +5,7 @@ module.exports = {
   apps: [{
     name: 'connection-sorting-game',
     script: './server/index.js',
-    cwd: '/home/user/newgame',  // Modify to your actual project path
+    cwd: '/home/yxh/newgame',  // Modify to your actual project path
 
     // Instance configuration
     instances: 1,
