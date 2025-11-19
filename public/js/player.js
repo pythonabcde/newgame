@@ -149,7 +149,7 @@ function startGameView() {
   showView('gameView');
 
   const canvas = document.getElementById('gameCanvas');
-  renderer = new GameRenderer(canvas, playerId); // Pass playerId to highlight current player
+  renderer = new GameRenderer(canvas);
 
   // Start sending input
   startInputLoop();
@@ -223,7 +223,8 @@ function readyForNextRound() {
 // Setup keyboard input
 function setupInput() {
   document.addEventListener('keydown', (e) => {
-    const key = e.key.toLowerCase();
+    // Don't lowercase for arrow keys, only for letter keys
+    const key = e.key.startsWith('Arrow') ? e.key : e.key.toLowerCase();
 
     if (key in keys) {
       keys[key] = true;
@@ -236,7 +237,8 @@ function setupInput() {
   });
 
   document.addEventListener('keyup', (e) => {
-    const key = e.key.toLowerCase();
+    // Don't lowercase for arrow keys, only for letter keys
+    const key = e.key.startsWith('Arrow') ? e.key : e.key.toLowerCase();
 
     if (key in keys) {
       keys[key] = false;

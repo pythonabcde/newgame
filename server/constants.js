@@ -20,9 +20,9 @@ module.exports = {
   DASH_COOLDOWN_SECONDS: 2,
 
   // Zone settings
-  ZONE_RADIUS: 12,
+  ZONE_RADIUS: 15, // Increased from 12 to 15 (1.25x diameter)
   ZONE_LOOP_PERIOD_SECONDS: 60, // Time to complete one loop
-  ZONE_PATH_MARGIN: 12, // Distance from map edges
+  ZONE_PATH_MARGIN: 15, // Distance from map edges (same as radius)
 
   // Server settings
   SERVER_TICK_RATE: 30, // updates per second

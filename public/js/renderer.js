@@ -1,6 +1,6 @@
 // Game Renderer for Canvas
 class GameRenderer {
-  constructor(canvas, currentPlayerId = null) {
+  constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.mapWidth = 150;
@@ -8,7 +8,6 @@ class GameRenderer {
     this.scale = 1;
     this.offsetX = 0;
     this.offsetY = 0;
-    this.currentPlayerId = currentPlayerId; // Track current player to highlight them
 
     this.resizeCanvas();
     window.addEventListener('resize', () => this.resizeCanvas());
@@ -76,7 +75,7 @@ class GameRenderer {
     this.ctx.scale(this.scale, this.scale);
 
     for (const zone of zones) {
-      const radius = 12; // ZONE_RADIUS
+      const radius = 15; // ZONE_RADIUS (increased to 1.25x diameter)
 
       // Determine fill and stroke colors based on ownership
       let fillColor, strokeColor;
@@ -116,25 +115,13 @@ class GameRenderer {
     const radius = 1.5; // PLAYER_RADIUS
 
     for (const player of players) {
-      // Determine if this is the current player
-      const isCurrentPlayer = this.currentPlayerId && player.playerId === this.currentPlayerId;
-
-      // Draw player circle
+      // Draw player circle - all players look the same (gray)
       this.ctx.beginPath();
       this.ctx.arc(player.x, player.y, radius, 0, Math.PI * 2);
-
-      // Highlight current player with white color, others stay gray
-      if (isCurrentPlayer) {
-        this.ctx.fillStyle = '#FFFFFF'; // White for current player
-        this.ctx.strokeStyle = '#4CAF50'; // Green border for current player
-        this.ctx.lineWidth = 0.25;
-      } else {
-        this.ctx.fillStyle = '#E0E0E0'; // Light gray for others
-        this.ctx.strokeStyle = '#000000'; // Black border for others
-        this.ctx.lineWidth = 0.15;
-      }
-
+      this.ctx.fillStyle = '#E0E0E0'; // Light gray for all players
       this.ctx.fill();
+      this.ctx.strokeStyle = '#000000'; // Black border
+      this.ctx.lineWidth = 0.15;
       this.ctx.stroke();
     }
 
