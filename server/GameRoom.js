@@ -251,9 +251,6 @@ class GameRoom {
           player.dashTimeRemaining = 0;
         }
       }
-
-      // Reset dash input for next tick
-      player.lastInput.dashPressed = false;
     }
 
     // Update zone ownership
