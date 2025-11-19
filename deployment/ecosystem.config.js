@@ -21,7 +21,7 @@ module.exports = {
     log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
 
     // Auto-restart configuration
-    autorestart: false,  // Disable autorestart to prevent port conflicts
+    autorestart: true,
     max_restarts: 10,
     min_uptime: '10s',
 
