@@ -17,10 +17,8 @@ module.exports = {
       PORT: 3000
     },
 
-    // Logging
+    // Logging (using PM2 default paths in ~/.pm2/logs/)
     log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
-    error_file: '/var/log/pm2/connection-sorting-error.log',
-    out_file: '/var/log/pm2/connection-sorting-out.log',
 
     // Auto-restart configuration
     autorestart: true,
