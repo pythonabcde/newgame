@@ -220,10 +220,11 @@ input[type="text"]:focus {
 }
 
 .drop-zone {
-  min-height: 50px;
+  min-height: 300px;
   border: 2px dashed transparent;
   border-radius: 4px;
   transition: all 0.2s;
+  padding: 10px;
 }
 
 .drop-zone.drag-over {
