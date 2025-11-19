@@ -146,6 +146,13 @@ function createPlayerCard(player) {
 
 // Setup drag and drop
 document.addEventListener('DOMContentLoaded', () => {
+  // Check if we should auto-create room
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('create') === 'true') {
+    // Automatically create room, skip landing page
+    createRoom();
+  }
+
   const dropZones = document.querySelectorAll('.drop-zone');
 
   dropZones.forEach(zone => {

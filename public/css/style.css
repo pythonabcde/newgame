@@ -194,11 +194,11 @@ input[type="text"]:focus {
 }
 
 .team-column.team1 h3 {
-  color: #6EC1FF;
+  color: #666;
 }
 
 .team-column.team2 h3 {
-  color: #FF8A80;
+  color: #666;
 }
 
 .player-card {
